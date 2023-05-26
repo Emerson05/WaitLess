@@ -9,6 +9,7 @@ export default function Signin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleRegister = () => {
     const userData = {
@@ -17,7 +18,7 @@ export default function Signin() {
       password: password,
     };
 
-    fetch('http://192.168.0.89:3000', {
+    fetch('http://192.168.0.89:3000/cadastro', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -26,13 +27,19 @@ export default function Signin() {
     })
       .then(response => response.json())
       .then(data => {
-        navigation.navigate('Login')
         console.log(data);
+        if (data.validacao) {
+          setErrorMessage('Email já cadastrado.');
+        } else {
+          // Navegue para a tela de login ou execute outras ações, se necessário
+          navigation.navigate('Login');
+        }
       })
       .catch(error => {
         // Ocorreu um erro ao salvar o cadastro
         console.error(error);
       });
+    
   };
 
   return (
@@ -51,6 +58,8 @@ export default function Signin() {
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
+
+      {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
 
       <StatusBar style="auto" />
     </View>
