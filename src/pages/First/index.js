@@ -48,6 +48,8 @@ export default function First() {
         name: 'Restaurante Xodó Nordestino',
         latitude: -8.071338631737113, 
         longitude: -34.92736750154064,
+        description: 'xodo do nordeste comida caseira delicia',
+        contact: 8128282828
       },
 
       {
@@ -81,6 +83,8 @@ export default function First() {
         name: 'Tá Danado de Bom',
         latitude:-8.076984271529266,  
         longitude: -34.917950845280025,
+        description: 'Comida danada de bom baiana delicia',
+        contact: 8192929292
       },
 
       {
@@ -218,7 +222,7 @@ export default function First() {
               }}
               image={customPin}
               title={restaurant.name}
-              onPress={() => navigation.navigate('Login', { restaurant })}
+              onPress={() => navigation.navigate('Restaurant',  restaurant )}
             />
           ))}
         </MapView>

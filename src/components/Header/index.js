@@ -9,20 +9,7 @@ export default function Header() {
  return (
   
    <View style={styles.header}>
-      <TextInput style={styles.input}></TextInput>
-     
-      <TouchableOpacity
-        onPress={() =>navigation.navigate('Signin')}
-        
-      >
-      
-    </TouchableOpacity>
-
-    <TouchableOpacity style={styles.logarBotao}
-       onPress={() =>navigation.navigate('Login')}
-    >
-    
-    </TouchableOpacity>
+    <Image source={require('../../img/logo.png')} style={styles.image} />
 
    </View>
   );
@@ -30,11 +17,10 @@ export default function Header() {
 
 const styles = StyleSheet.create({
     header:{
-      height: 120,
+      height: 80,
       backgroundColor: '#FFB573',
-      flexDirection: 'row',
       alignItems: 'center',
-      justifyContent:'space-between',
+      justifyContent:'center',
       paddingLeft: 15,
       paddingRight:15,
       shadowColor: 'green',
