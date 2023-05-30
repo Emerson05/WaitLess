@@ -9,7 +9,7 @@ export default function Header() {
  return (
   
    <View style={styles.header}>
-      <TextInput style={styles.input}></TextInput>
+      <Image source={require('../../img/logo.png')} style={styles.image} />
      
       <TouchableOpacity
         onPress={() =>navigation.navigate('Signin')}
@@ -34,30 +34,15 @@ const styles = StyleSheet.create({
       backgroundColor: '#FFB573',
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent:'space-between',
+      justifyContent:'center',
       paddingLeft: 15,
       paddingRight:15,
       shadowColor: 'green',
       borderBottomWidth: 0.2,
       elevation: 30
     },
-    input:{ 
-      borderRadius: 25,
-      width: 320,
-      height: 40, 
-      backgroundColor: '#FFFF',
-      paddingLeft: 20,
-      marginTop:25,
-      marginLeft: 20
+    image:{ 
+      marginTop: 35
     },
 
-    lupa:{
-      height:30,
-      marginTop:30,
-      width:20
-
-    },
-  
-   
- 
 })

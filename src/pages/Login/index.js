@@ -9,6 +9,8 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isReserved, setIsReserved] = useState(false);
+
   const handleLogin = () => {
     const userData = {
       email: email,
@@ -25,15 +27,16 @@ export default function Login() {
       .then(response => response.json())
       .then(data => {
         if (data.validacao) {
-          // Login bem-sucedido
-          navigation.navigate('First');
+          setIsReserved(true);
+          setTimeout(() => {
+            setIsReserved(false);
+            navigation.navigate('First');
+          }, 5000);
         } else {
-          // Credenciais inválidas
-          setErrorMessage('Email ou senha Invalida.');
+          setErrorMessage('Email ou senha inválida.');
         }
       })
       .catch(error => {
-        // Ocorreu um erro durante a autenticação
         console.error(error);
       });
   };
@@ -61,7 +64,12 @@ export default function Login() {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
-      {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+
+      {isReserved && <Text style={styles.reservedMessage}>Reservado</Text>}
+
+      {errorMessage ? (
+        <Text style={styles.errorMessage}>{errorMessage}</Text>
+      ) : null}
 
       <TouchableOpacity onPress={() => navigation.navigate('Signin')}>
         <Text style={styles.Textocadastrar}>
@@ -117,5 +125,15 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     fontSize: 16,
     color: '#1C6750',
+  },
+  reservedMessage: {
+    fontSize: 18,
+    marginTop: 10,
+    color: 'green',
+  },
+  errorMessage: {
+    fontSize: 18,
+    marginTop: 10,
+    color: 'red',
   },
 });

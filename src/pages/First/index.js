@@ -218,7 +218,7 @@ export default function First() {
               }}
               image={customPin}
               title={restaurant.name}
-              onPress={() => navigation.navigate('Login', { restaurant })}
+              onPress={() => navigation.navigate('Restaurant', { restaurant })}
             />
           ))}
         </MapView>
