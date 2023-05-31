@@ -1,9 +1,14 @@
 import React, { useEffect, useState }  from 'react';
-import { View, Text , StyleSheet, TouchableOpacity} from 'react-native';
-
-import Header from '../../components/Header';
-import DateTimePicker from '@react-native-community/datetimepicker'
+import { View, Text , StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import { useRoute, useNavigation} from '@react-navigation/native';
+
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+import { format, isBefore, isWeekend } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import moment from 'moment';
 
 export default function Restaurant() {
   const { params } = useRoute();
@@ -12,9 +17,12 @@ export default function Restaurant() {
 
   const [date, setDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  
 
   const [time, setTime] = useState(null);
   const [showTimePicker, setShowTimePicker] = useState(false);
+
+
   console.log(params);
 
   useEffect(() => {
@@ -32,19 +40,54 @@ export default function Restaurant() {
     navigation.navigate('Login');
   };
 
+  const currentDate = new Date();
+  const maximumDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
+
+
+  
   const handleDateChange = (event, selectedDate) => {
-    if (selectedDate && selectedDate >= new Date()) {
+    if (selectedDate) {
       setDate(selectedDate);
     }
     setShowDatePicker(false);
   };
+  
+  const formatDate = (date) => {
+    if(date){
+    return format(date, "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
+  }
+  return '';
+  };
+
+
+  const minTimeParts = params.hours.split(' - ')[0].split(':');
+  const maxTimeParts = params.hours.split(' - ')[1].split(':');
+  const minHour = parseInt(minTimeParts[0]);
+  const minMinute = parseInt(minTimeParts[1]);
+  const maxHour = parseInt(maxTimeParts[0]);
+  const maxMinute = parseInt(maxTimeParts[1]);
 
   const handleTimeChange = (event, selectedTime) => {
-    if (selectedTime) {
-      const hours = selectedTime.getHours().toString().padStart(2, '0');
-      const minutes = selectedTime.getMinutes().toString().padStart(2, '0');
-      setTime(`${hours}:${minutes}`);
+    if (event.type !== 'dismissed' && selectedTime) {
+      const selectedDateTime = new Date(selectedTime);
+      const minTime = new Date();
+      minTime.setHours(minHour, minMinute, 0);
+      const maxTime = new Date();
+      maxTime.setHours(maxHour, maxMinute, 0); 
+  
+      if (selectedDateTime < minTime) {
+        setTime(null);
+        const formattedMinMinute = minMinute.toString().padStart(2, '0');
+        Alert.alert('Horário inválido', `Selecione um horário posterior a ${minHour}:${formattedMinMinute}`);
+      } else if (selectedDateTime > maxTime) {
+        setTime(null);
+        const formattedMaxMinute = maxMinute.toString().padStart(2, '0');
+        Alert.alert('Horário inválido', `Selecione um horário anterior a ${maxHour}:${formattedMaxMinute}`);
+      } else {
+        setTime(selectedDateTime);
+      }
     }
+  
     setShowTimePicker(false);
   };
 
@@ -59,62 +102,78 @@ export default function Restaurant() {
   return (
 
   <View style={styles.container}> 
-        <Text style={styles.title} >{params.name}</Text>
-        <Text style={styles.subtitle} >{params.description}</Text>
 
-        <Text style={styles.section} >Endereço</Text>
+    <Text style={styles.title} >{params.name}</Text>
+    <Text style={styles.subtitle} >{params.description}</Text>
 
-        <Text style={styles.Text} >{address?.address.road},
-        <Text style={[styles.Text, styles.row]} > {address?.address.city}.</Text>
-        </Text>
+    <Text style={styles.section} >Endereço</Text>
 
-        <Text style={[styles.Text, styles.row]} >{address?.address.postcode},
-        <Text style={styles.Text} > {address?.address.state}.</Text>
-        </Text>
+    <Text style={styles.Text} >{address?.address.road},
+      <Text style={[styles.Text, styles.row]} > {address?.address.city}.</Text>
+    </Text>
+
+    <Text style={[styles.Text, styles.row]} >{address?.address.postcode},
+      <Text style={styles.Text} > {address?.address.state}.</Text>
+    </Text>
                                                                               
-        <Text style={styles.section} >Contato</Text>
-        <Text style={styles.Text} >{params.contact}</Text>
+    <Text style={styles.section} >Contato</Text>
+    <Text style={styles.Text} >{params.contact}</Text>
 
-        <View style={styles.reserve}>
-          <Text style={styles.subtitle2}>Faça sua reserva já</Text>
+    <Text style={styles.section} >Horário de Funcionamento</Text>
+    <Text style={styles.Text} >{params.hours}</Text>
 
-          <TouchableOpacity style={styles.button} onPress={openDatePicker}>
-            <Text style={styles.Text}>Selecionar Data</Text>
-          </TouchableOpacity>
+    <Text style={styles.section} >Lotação</Text>
+    <Text style={styles.Text} >{params.capacity}</Text>
+
+    <View style={styles.reserve}>
+      <Text style={styles.subtitle2}>Faça sua reserva já</Text>
+
+      <MaterialCommunityIcons name='calendar-month' size={50} marginTop= {10}>
+        <TouchableOpacity style={styles.button} onPress={openDatePicker}>
+          <Text style={styles.Text}>Selecionar Data</Text>
+        </TouchableOpacity>
+      </MaterialCommunityIcons>
 
           {showDatePicker && (
           <DateTimePicker
             value={date || new Date()}
             mode="date"
             display="default"
+            locale='pt-BR'
+            minimumDate={new Date()}
+            maximumDate={maximumDate}
+            disabledDates={(date) => isDateDisabled(date)}
             onChange={handleDateChange}
             />
            )}
 
-          
-
-          <TouchableOpacity style={styles.button} onPress={openTimePicker}>
+      <MaterialCommunityIcons name='clock-edit' size={40} marginTop= {10}>
+        <TouchableOpacity style={styles.button} onPress={openTimePicker}>
           <Text style={styles.Text}>Selecionar Hora</Text>
-          </TouchableOpacity>
+        </TouchableOpacity>
+      </MaterialCommunityIcons>
 
           {showTimePicker && (
           <DateTimePicker
-            value={date || new Date()}
+            value={time || new Date()}
             mode="time"
             display="default"
+            minimumDate={new Date()}
             onChange={handleTimeChange}
            />
           )}
+          
+      <MaterialCommunityIcons name='food-turkey' size={50} marginTop= {10}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login' )}>
+          <Text style={styles.Text}>Reservar</Text>
+        </TouchableOpacity>
+      </MaterialCommunityIcons>
 
           
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login' )}>
-          <Text style={styles.Text}>Reservar</Text>
-          </TouchableOpacity>
-          <View style={styles.datetime}>
-          <Text style={styles.selectedDate}>{date ? date.toDateString() : ''}</Text>
-          <Text style={styles.selectedTime}>{time}</Text>
+          <Text style={styles.selectedDate}>{date ? `Sua reserva é dia ${formatDate(date)}` : ''}</Text>
+          <Text style={styles.selectedTime}>{time ? `Às ${format(time, 'HH:mm')} horas` : ''}</Text>
           </View>
-      </View>
+    
 
   </View>
   
@@ -125,19 +184,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFB573',
-    padding: 20
+    padding: 10
   },
   row:{
     flexDirection: 'row'
   },
   title:{
     color: '#1C6750',
-    fontSize: 26,
-    fontWeight: 'bold'
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10
   },
   subtitle:{
     color: '#1C6750',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
   
   },
@@ -145,7 +205,7 @@ const styles = StyleSheet.create({
     color:'#1C6750',
     fontSize: 16,
     fontWeight: 'bold',
-    paddingTop: 20,
+    paddingTop: 15,
     justifyContent: 'center'
   },
   Text:{
@@ -159,7 +219,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
-    marginTop: 25
+    marginTop: 205
   },
   reserve:{
     alignItems: 'center',
@@ -171,16 +231,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  datetime:{
-    flexDirection: 'row'
-  },
+
   selectedDate: {
+    justifyContent: 'center',
     fontSize: 16,
     marginTop: 10,
   },
   selectedTime: {
     fontSize: 16,
     marginTop: 10,
-    marginLeft: 10
   },
 });

@@ -48,8 +48,36 @@ export default function First() {
         name: 'Restaurante Xodó Nordestino',
         latitude: -8.071338631737113, 
         longitude: -34.92736750154064,
-        description: 'xodo do nordeste comida caseira delicia',
-        contact: 8128282828
+        description: 'Lanches, sopas e pratos típicos da culinária nordestina, além de doces, em espaço simples com clima familiar.',
+        contact: 8128282828,
+        hours: '17:00 - 22:00',
+        days: [
+          'Segunda-feira',
+          'Terça-feira',
+          'Quarta-feira',
+          'Quinta-feira',
+          'Sexta-feira',
+          'Sábado',
+        ],
+        capacity: '14/50'
+      },
+
+      {
+        name: 'Tá Danado de Bom',
+        latitude:-8.076984271529266,  
+        longitude: -34.917950845280025,
+        description: 'Comida danada de bom baiana delicia',
+        contact: 8192929292,
+        hours: '15:00 - 18:30',
+        days: [
+          'Sunday',
+          'Monday',
+          'Tuesday ',
+          'Wednesday ',
+          'Thursday ',
+          'Friday ',
+          'Saturday ',
+        ]
       },
 
       {
@@ -77,14 +105,6 @@ export default function First() {
         name: 'Restaurante Miúra ',
         latitude: -8.057153527817967, 
         longitude: -34.902877865890716,
-      },
-
-      {
-        name: 'Tá Danado de Bom',
-        latitude:-8.076984271529266,  
-        longitude: -34.917950845280025,
-        description: 'Comida danada de bom baiana delicia',
-        contact: 8192929292
       },
 
       {
@@ -225,6 +245,8 @@ export default function First() {
               onPress={() => navigation.navigate('Restaurant',  restaurant )}
             />
           ))}
+
+        
         </MapView>
       )}
     </View>
