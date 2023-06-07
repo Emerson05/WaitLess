@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const app = express();
 
 // Configuração do banco de dados
-const MONGODB_URI = 'mongodb://127.0.0.1/waitless'; // URL do MongoDB
+const MONGODB_URI = "mongodb+srv://waitless:wait00less@waitless.uff3h4z.mongodb.net/?retryWrites=true&w=majority"; // URL do MongoDB
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -38,10 +38,14 @@ app.post('/login', async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found'  });
     }
+    if ( !email || !password) {
+      return res.status(400).json({ error: 'All fields are required', validacaoBranco: true });
+    }
+
 
     // Verifica se a senha está correta
     if (user.password !== password) {
-      return res.status(401).json({ error: 'Invalid password'  });
+      return res.status(401).json({ error: 'Invalid password', validarSenha: true });
     }
 
     return res.status(200).json({ message: 'Login successful',validacao: true });
@@ -51,17 +55,30 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Rota para salvar o cadastro
 app.post('/cadastro', async (req, res) => {
   try {
-    const { fullName, email, password } = req.body;
+    let { fullName, email, password } = req.body;
+
+    // Remove os espaços em branco antes e depois dos valores dos campos
+    fullName = fullName.trim();
+    email = email.trim();
+    password = password.trim();
+
+
+    if (!fullName || !email || !password) {
+      return res.status(400).json({ error: 'All fields are required', validacaoBranco: true });
+    }
 
     // Verifica se o email já está cadastrado
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ error: 'Email already exists', validacao: true });
+      return res.status(400).json({ error: 'Email already exists', validacaoExiste: true });
+    }else{
+
     }
 
+    
+   
     // Cria um novo usuário
     const newUser = new User({ fullName, email, password });
     await newUser.save();
@@ -72,7 +89,6 @@ app.post('/cadastro', async (req, res) => {
     return res.status(500).json({ error: 'Something went wrong' });
   }
 });
-
 // Inicia o servidor
 app.listen(3000, () => {
   console.log('Servidor rodando na porta 3000');

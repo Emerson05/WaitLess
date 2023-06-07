@@ -17,7 +17,7 @@ export default function Signin() {
       email: email,
       password: password,
     };
-
+  
     fetch('http://192.168.0.89:3000/cadastro', {
       method: 'POST',
       headers: {
@@ -28,8 +28,10 @@ export default function Signin() {
       .then(response => response.json())
       .then(data => {
         console.log(data);
-        if (data.validacao) {
-          setErrorMessage('Email já cadastrado.');
+        if (data.validacaoBranco) {
+          setErrorMessage('Por favor, preencha todos os campos');
+        } else if (data.validacaoExiste) {
+          setErrorMessage('Email já cadastrado');
         } else {
           // Navegue para a tela de login ou execute outras ações, se necessário
           navigation.navigate('Login');
@@ -39,9 +41,8 @@ export default function Signin() {
         // Ocorreu um erro ao salvar o cadastro
         console.error(error);
       });
-    
   };
-
+  
   return (
     <View style={styles.container}>
       <Image source={require('../../img/logo.png')} style={styles.logo} />
@@ -102,4 +103,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     color: '#FFFF',
   },
+  errorMessage:{
+    color:'red',
+    marginTop: 10
+  }
 });
