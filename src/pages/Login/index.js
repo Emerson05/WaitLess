@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -9,6 +9,8 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Track login status
+
   const handleLogin = () => {
     const userData = {
       email: email,
@@ -25,15 +27,20 @@ export default function Login() {
       .then(response => response.json())
       .then(data => {
         if (data.validacao) {
-          // Login bem-sucedido
-          navigation.navigate('First');
+        
+          setIsAuthenticated(true); 
+
+          
+          setTimeout(() => {
+            navigation.navigate('First');
+          }, 4000);
         } else {
-          // Credenciais inválidas
-          setErrorMessage('Email ou senha Invalida.');
+        
+          setErrorMessage('Email ou senha inválida.');
         }
       })
       .catch(error => {
-        // Ocorreu um erro durante a autenticação
+        
         console.error(error);
       });
   };
@@ -63,6 +70,8 @@ export default function Login() {
       </TouchableOpacity>
       {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
 
+      {isAuthenticated ? <Text style={styles.reservadoMessage}>Reservado</Text> : null} 
+      
       <TouchableOpacity onPress={() => navigation.navigate('Signin')}>
         <Text style={styles.Textocadastrar}>
           Não possui uma conta? Cadastre-se
@@ -116,6 +125,16 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontStyle: 'italic',
     fontSize: 16,
+    color: '#1C6750',
+  },
+  errorMessage: {
+    color: 'red',
+    marginTop: 10,
+  },
+  reservadoMessage: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 10,
     color: '#1C6750',
   },
 });

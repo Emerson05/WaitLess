@@ -1,6 +1,6 @@
-import React, { useEffect, useState }  from 'react';
-import { View, Text , StyleSheet, TouchableOpacity, Alert} from 'react-native';
-import { useRoute, useNavigation} from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -17,13 +17,12 @@ export default function Restaurant() {
 
   const [date, setDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  
 
   const [time, setTime] = useState(null);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
-
-  console.log(params);
+  const [randomCapacity1, setRandomCapacity1] = useState(0);
+  const [randomCapacity2, setRandomCapacity2] = useState(0);
 
   useEffect(() => {
     fetch(
@@ -32,16 +31,31 @@ export default function Restaurant() {
       const data = await request.json();
 
       setAddres(data);
-     
     });
+
+    generateRandomCapacity();
   }, []);
+
+  const generateRandomCapacity = () => {
+    const minCapacity = 0;
+    const maxCapacity = 100;
+
+    const newRandomCapacity1 = Math.floor(Math.random() * (maxCapacity - minCapacity + 1)) + minCapacity;
+    const newRandomCapacity2 = Math.floor(Math.random() * (maxCapacity - newRandomCapacity1 + 1)) + newRandomCapacity1;
+
+    setRandomCapacity1(newRandomCapacity1);
+    setRandomCapacity2(newRandomCapacity2);
+  };
 
   const handleReservation = () => {
     navigation.navigate('Login');
+    generateRandomCapacity();
   };
-
   const currentDate = new Date();
   const maximumDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
+
+
+
 
 
   
@@ -104,6 +118,7 @@ export default function Restaurant() {
   <View style={styles.container}> 
 
     <Text style={styles.title} >{params.name}</Text>
+    <Text style={styles.section} >Descrição</Text>
     <Text style={styles.subtitle} >{params.description}</Text>
 
     <Text style={styles.section} >Endereço</Text>
@@ -123,7 +138,7 @@ export default function Restaurant() {
     <Text style={styles.Text} >{params.hours}</Text>
 
     <Text style={styles.section} >Lotação</Text>
-    <Text style={styles.Text} >{params.capacity}</Text>
+    <Text style={styles.Text}>{randomCapacity1}/{randomCapacity2}</Text>
 
     <View style={styles.reserve}>
       <Text style={styles.subtitle2}>Faça sua reserva já</Text>
@@ -147,7 +162,7 @@ export default function Restaurant() {
             />
            )}
 
-      <MaterialCommunityIcons name='clock-edit' size={40} marginTop= {10}>
+      <MaterialCommunityIcons name='clock-edit' size={50} marginTop= {10}>
         <TouchableOpacity style={styles.button} onPress={openTimePicker}>
           <Text style={styles.Text}>Selecionar Hora</Text>
         </TouchableOpacity>
@@ -183,7 +198,7 @@ export default function Restaurant() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFB573',
+    backgroundColor: '#FFFF',
     padding: 10
   },
   row:{
@@ -193,19 +208,22 @@ const styles = StyleSheet.create({
     color: '#1C6750',
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10
+    marginTop:70,
+
   },
   subtitle:{
     color: '#1C6750',
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: 'bold',
+    marginTop:20,
+
   
   },
   section:{
     color:'#1C6750',
     fontSize: 16,
     fontWeight: 'bold',
-    paddingTop: 15,
+    paddingTop: 35,
     justifyContent: 'center'
   },
   Text:{
@@ -213,13 +231,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button:{
-    width: 160,
-    height: 55,
-    backgroundColor: '#E24141',
+    width: 150,
+    height: 50,
+    backgroundColor: '#BAC9C5',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
-    marginTop: 205
+    
   },
   reserve:{
     alignItems: 'center',
