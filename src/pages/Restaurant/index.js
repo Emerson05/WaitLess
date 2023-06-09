@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert,ScrollView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -115,7 +115,7 @@ export default function Restaurant() {
 
   return (
 
-  <View style={styles.container}> 
+  <ScrollView style={styles.container}> 
 
     <Text style={styles.title} >{params.name}</Text>
     <Text style={styles.section} >Descrição</Text>
@@ -190,7 +190,7 @@ export default function Restaurant() {
           </View>
     
 
-  </View>
+  </ScrollView>
   
   );
 }
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     color: '#1C6750',
     fontSize: 24,
     fontWeight: 'bold',
-    marginTop:70,
+    marginTop:40,
 
   },
   subtitle:{
@@ -258,5 +258,6 @@ const styles = StyleSheet.create({
   selectedTime: {
     fontSize: 16,
     marginTop: 10,
+    marginBottom:10
   },
 });
