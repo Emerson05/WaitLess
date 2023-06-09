@@ -10,6 +10,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Track login status
+  const [showError, setShowError] = useState(false);
 
   const handleLogin = () => {
     const userData = {
@@ -35,10 +36,13 @@ export default function Login() {
             navigation.navigate('First');
           }, 4000);
         } else {
-        
-          setErrorMessage('Email ou senha inválida.');
+          setErrorMessage('Email ou senha inválida, Tente Novamente');
+          setShowError(true); 
+  
+          setTimeout(() => {
+            setShowError(false); 
+          }, 3000);
         }
-
        
       })
       .catch(error => {
@@ -70,7 +74,7 @@ export default function Login() {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
-      {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+      {showError && <Text style={styles.errorMessage}>{errorMessage}</Text>}
 
       {isAuthenticated ? <Text style={styles.reservadoMessage}>Reservado</Text> : null} 
       
