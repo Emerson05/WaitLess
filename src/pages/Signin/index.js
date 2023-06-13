@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import Header from '../../components/Header';
+
 
 export default function Signin() {
   const [fullName, setFullName] = useState('');

@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState} from 'react';
+import { View, Text, StyleSheet, TextInput, Image} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useNavigation } from '@react-navigation/native';
-import customPin from '../../img/pinres.png';
 import {
   requestForegroundPermissionsAsync,
   getCurrentPositionAsync,
@@ -10,7 +9,8 @@ import {
   LocationAccuracy,
 } from 'expo-location';
 
-import Header from '../../components/Header';
+import customPin from '../../img/pinres.png';
+import searchPin from '../../img/pinmarron.png'
 
 export default function First() {
   const [location, setLocation] = useState(null);
@@ -262,6 +262,48 @@ export default function First() {
     setRestaurants(data);
   }
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+
+  const handleSearch = () => {
+  // Encontre o restaurante correspondente ao termo de pesquisa
+  const restaurant = restaurants.find(
+    (restaurant) =>
+      restaurant.name.toLowerCase() === searchQuery.toLowerCase()
+  );
+
+  // Se o restaurante for encontrado, defina-o como o restaurante selecionado
+  if (restaurant) {
+    setSelectedRestaurant(restaurant);
+    
+  // Atualize a propriedade isSelected para true para o restaurante selecionado
+  const updatedRestaurants = restaurants.map((r) => ({
+    ...r,
+    isSelected: r === restaurant,
+  }));
+  setRestaurants(updatedRestaurants);
+
+    // Mova a visualização do mapa para o restaurante selecionado
+    myRef.current?.animateCamera({
+      center: {
+        latitude: restaurant.latitude,
+        longitude: restaurant.longitude,
+      },
+    });
+
+    // Defina um temporizador para reverter a imagem do marcador para customPin após 3 segundos (3000 milissegundos)
+    setTimeout(() => {
+      setSelectedRestaurant(null);
+      const updatedRestaurants = restaurants.map((r) => ({
+        ...r,
+        isSelected: false,
+      }));
+      setRestaurants(updatedRestaurants);
+    }, 3000);
+  }
+};
+
+
   useEffect(() => {
     requestLocationPermissions();
   }, []);
@@ -276,7 +318,7 @@ export default function First() {
     watchPositionAsync(
       {
         accuracy: LocationAccuracy.Highest,
-        timeInterval: 1000,
+        timeInterval: 5000,
         distanceInterval: 1,
       },
       (response) => {
@@ -290,8 +332,17 @@ export default function First() {
 
   return (
     <View style={styles.container}>
-      <Header />
+      <View style={styles.header}>
 
+        <Image source={require('../../img/logo.png')} style={styles.image} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Pesquisar restaurante"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={handleSearch}
+          />
+      </View>
       {location && (
         <MapView
           style={styles.map}
@@ -312,17 +363,19 @@ export default function First() {
 
           {restaurants.map((restaurant, index) => (
             <Marker
-              pinColor='blue'
+            pinColor={'blue'}
               key={index}
               coordinate={{
                 latitude: restaurant.latitude,
                 longitude: restaurant.longitude,
               }}
-              image={customPin}
+              image={restaurant.isSelected ? searchPin: customPin}
               title={restaurant.name}
               onPress={() => navigation.navigate('Restaurant',  restaurant )}
             />
-          ))}
+          ))
+          }
+
 
         
         </MapView>
@@ -338,5 +391,28 @@ const styles = StyleSheet.create({
   map: {
     width: '100%',
     height: '100%',
+  },
+  header: {
+    height: 180,
+    backgroundColor: '#FFB573',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 15,
+    paddingRight: 15,
+    shadowColor: 'green',
+    borderBottomWidth: 0.2,
+    elevation: 30,
+  },
+  image: {
+    marginTop: 40,
+   
+  },
+  searchInput: {
+    borderRadius: 25,
+    width: 320,
+    height: 40,
+    backgroundColor: '#FFF',
+    paddingLeft: 20,
+    marginTop: 10,
   },
 });
